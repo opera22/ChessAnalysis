@@ -84,7 +84,9 @@ def opening_counts_bar_chart():
     sorted_df = df.sort_values(["opening_counts"], ascending=[False])
     sorted_df = sorted_df.drop_duplicates("opening_name", keep="first")
 
-    print(sorted_df)
+    plt.bar(sorted_df["opening_name"].head(10), sorted_df["opening_counts"].head(10))
+
+    plt.show()
 
 
     """ plt.bar(["White", "Black"], [count_wins_white, count_wins_black])

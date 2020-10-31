@@ -2,7 +2,9 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 
-df = pd.read_csv("games.csv", usecols=["white_rating", "black_rating", "turns", "winner", "opening_ply"])
+# created an "original" dataframe (df_original) because the other copy (df) is often modified
+df_original = pd.read_csv("games.csv", usecols=["white_rating", "black_rating", "turns", "winner", "opening_ply", "opening_name"])
+df = df_original
 
 # winner counts bar chart
 def winner_counts_bar_chart():
@@ -27,13 +29,13 @@ def winner_counts_bar_chart():
 def book_moves_by_rating():
 
     # this bit of code creates an avg_rating column
-    avg_rating = []
+    avg_ratings = []
 
     for index in range(len(df["white_rating"])):
         avg = ( df["white_rating"][index] + df["black_rating"][index] ) // 2
-        avg_rating.append(avg)
+        avg_ratings.append(avg)
 
-    df["avg_rating"] = avg_rating
+    df["avg_rating"] = avg_ratings
 
     df_avg_opening_ply = df.groupby(["avg_rating"])["opening_ply"].mean()
 
@@ -73,12 +75,27 @@ def book_moves_by_rating_mavg():
     plt.title("Book Moves by Rating -- Moving Average")
     plt.show()
 
+# winner counts bar chart
+def opening_counts_bar_chart():
 
 
+    df["opening_counts"] = df['opening_name'].map(df['opening_name'].value_counts())
+    
+    sorted_df = df.sort_values(["opening_counts"], ascending=[False])
+    sorted_df = sorted_df.drop_duplicates("opening_name", keep="first")
 
-# Default number of entires is 10,000 but it can be changed by the user
+    print(sorted_df)
+
+
+    """ plt.bar(["White", "Black"], [count_wins_white, count_wins_black])
+    plt.title("White wins: " + str(count_wins_white) + " Black wins: " + str(count_wins_black) + \
+        "\nProbability that white wins: " + str(round(white_win_percent, 3)) + \
+        "\nProbability that black wins: " + str(round(black_win_percent, 3)))   
+    plt.show() """
+
+# Default number of entries is 10,000 but it can be changed by the user
 entries = 10000
-df = df.head(entries)
+df = df_original.head(entries)
 
 print("-----------------------------")
 print("Welcome to the Chess Analyzer")
@@ -91,6 +108,7 @@ while exit_loop == False:
     print("(W) View the Winner Counts bar chart")
     print("(B) View the Book Moves by Rating graph")
     print("(M) View the Book Moves by Rating MOVING AVG graph")
+    print("(O) View the Opening Counts bar chart")
     print("(E) Change the amount of entries (" + str(entries) + ")")
     print("(X) Exit")
     user_input = input().lower()
@@ -101,15 +119,19 @@ while exit_loop == False:
         book_moves_by_rating()
     elif user_input == "m":
         book_moves_by_rating_mavg()
+    elif user_input == "o":
+        opening_counts_bar_chart()
     elif user_input == "e":
         num = int(input("Enter a number 100-20000: "))
         if num < 100 or num > 20000:
             print("That number is out of range!")
         else:
             entries = num
-            df = df.head(entries)
+            df = df_original.head(entries)
     elif user_input == "x":
         exit_loop = True
+
+print("~~ Goodbye! ~~")
 
 
 

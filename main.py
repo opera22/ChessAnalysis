@@ -44,7 +44,35 @@ def book_moves_by_rating():
     plt.plot(df_avg_opening_ply["avg_rating"], df_avg_opening_ply["opening_ply"])
     plt.xlabel("Ratings")
     plt.ylabel("Average Amt. of Book Moves at Opening")
+    plt.title("Book Moves by Rating")
     plt.show()
+
+def book_moves_by_rating_mavg():
+
+    # this bit of code creates an avg_rating column
+    avg_ratings = []
+
+    for index in range(len(df["white_rating"])):
+        avg = ( df["white_rating"][index] + df["black_rating"][index] ) // 2
+        avg_ratings.append(avg)
+
+    df["avg_rating"] = avg_ratings
+
+    df_avg_opening_ply = df.groupby(["avg_rating"])["opening_ply"].mean()
+    df_avg_opening_ply.to_csv("games_new.csv", index = True, header = True)
+    df_avg_opening_ply = pd.read_csv("games_new.csv")
+
+    df_avg_opening_ply["MA"] = df_avg_opening_ply["opening_ply"].rolling(30, min_periods=1).mean()
+    df_avg_opening_ply.to_csv("games_new.csv", index = True, header = True)
+    df_avg_opening_ply = pd.read_csv("games_new.csv")
+
+    plt.plot(df_avg_opening_ply["avg_rating"], df_avg_opening_ply["opening_ply"])
+    plt.plot(df_avg_opening_ply["avg_rating"], df_avg_opening_ply["MA"])
+    plt.xlabel("Ratings")
+    plt.ylabel("Average Amt. of Book Moves at Opening")
+    plt.title("Book Moves by Rating -- Moving Average")
+    plt.show()
+
 
 
 
@@ -62,6 +90,7 @@ while exit_loop == False:
     print("Select an option:")
     print("(W) View the Winner Counts bar chart")
     print("(B) View the Book Moves by Rating graph")
+    print("(M) View the Book Moves by Rating MOVING AVG graph")
     print("(E) Change the amount of entries (" + str(entries) + ")")
     print("(X) Exit")
     user_input = input().lower()
@@ -70,9 +99,11 @@ while exit_loop == False:
         winner_counts_bar_chart()
     elif user_input == "b":
         book_moves_by_rating()
+    elif user_input == "m":
+        book_moves_by_rating_mavg()
     elif user_input == "e":
-        num = int(input("Enter a number 1-20000: "))
-        if num <= 0 or num > 20000:
+        num = int(input("Enter a number 100-20000: "))
+        if num < 100 or num > 20000:
             print("That number is out of range!")
         else:
             entries = num

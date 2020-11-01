@@ -85,15 +85,14 @@ def opening_counts_bar_chart():
     sorted_df = sorted_df.drop_duplicates("opening_name", keep="first")
 
     plt.bar(sorted_df["opening_name"].head(10), sorted_df["opening_counts"].head(10))
+    
+    plt.gcf().subplots_adjust(bottom=0.5)
 
+    plt.xticks(rotation=90)
+
+    plt.title("Top 10 Most Popular Openings")
     plt.show()
 
-
-    """ plt.bar(["White", "Black"], [count_wins_white, count_wins_black])
-    plt.title("White wins: " + str(count_wins_white) + " Black wins: " + str(count_wins_black) + \
-        "\nProbability that white wins: " + str(round(white_win_percent, 3)) + \
-        "\nProbability that black wins: " + str(round(black_win_percent, 3)))   
-    plt.show() """
 
 # Default number of entries is 10,000 but it can be changed by the user
 entries = 10000
@@ -134,9 +133,3 @@ while exit_loop == False:
         exit_loop = True
 
 print("~~ Goodbye! ~~")
-
-
-
-
-#df = pd.read_csv("games_new.csv")
-#pd.to_csv("games_new.csv", index = True, header = True)
